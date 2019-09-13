@@ -1,0 +1,8 @@
+# 1.0.1
+- manifest: bump deps
+- meta: add github issue/pr templates
+- meta: standardize travis config
+
+# 1.0.0
+- Initial version
+
