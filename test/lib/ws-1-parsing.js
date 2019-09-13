@@ -25,7 +25,7 @@ describe('websocket1 parsing non json', () => {
     wss.on('connection', function connection (ws) {
       ws.on('message', function incoming (msg) {
         msg = JSON.parse(msg)
-        assert.equal(msg.len, '25')
+        assert.strictEqual(msg.len, '25')
         wss.close()
         done()
       })

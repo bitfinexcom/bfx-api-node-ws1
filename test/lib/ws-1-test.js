@@ -1,14 +1,14 @@
 /* eslint-env mocha */
 'use strict'
 
-const PORT = 1337
-
 const assert = require('assert')
-
 const WebSocket = require('ws')
-const WSv1 = require('../../lib/ws')
+const _isObject = require('lodash/isObject')
 
+const WSv1 = require('../../lib/ws')
 const orderbookR0 = require('../fixtures/response-ws-1-orderbook-R0.json')
+
+const PORT = 1337
 
 const getWSInstance = () => {
   return new WSv1({
@@ -86,7 +86,7 @@ describe('WebSocket v1 integration', () => {
     })
 
     bws.on('error', (err) => {
-      assert.equal(err.event, 'auth')
+      assert.strictEqual(err.event, 'auth')
       bws.close()
       wss.close(done)
     })
@@ -121,8 +121,8 @@ describe('WebSocket v1 integration', () => {
       const channelId = data.chanId
 
       bws.once('unsubscribed', (data) => {
-        assert.equal(data.status, 'OK')
-        assert.equal(data.chanId, channelId)
+        assert.strictEqual(data.status, 'OK')
+        assert.strictEqual(data.chanId, channelId)
         bws.close()
         wss.close(done)
       })
@@ -149,8 +149,8 @@ describe('WebSocket v1 integration', () => {
     })
 
     bws.on('subscribed', (data) => {
-      assert.equal(data.channel, 'trades')
-      assert.equal(data.pair, 'BTCUSD')
+      assert.strictEqual(data.channel, 'trades')
+      assert.strictEqual(data.pair, 'BTCUSD')
       bws.close()
       wss.close(done)
     })
@@ -176,11 +176,11 @@ describe('WebSocket v1 integration', () => {
     bws.open()
 
     bws.once('orderbook', (pair, data) => {
-      assert.equal(pair, 'BTCUSD')
-      assert.equal(typeof data[0].price, 'number')
-      assert.equal(typeof data[0].orderId, 'number')
-      assert.equal(typeof data[0].amount, 'number')
-      assert.equal(data.length, 50)
+      assert.strictEqual(pair, 'BTCUSD')
+      assert.strictEqual(typeof data[0].price, 'number')
+      assert.strictEqual(typeof data[0].count, 'number')
+      assert.strictEqual(typeof data[0].amount, 'number')
+      assert.strictEqual(data.length, 50)
       bws.close()
       wss.close(done)
     })
@@ -207,17 +207,17 @@ describe('WebSocket v1 integration', () => {
     bws.open()
 
     bws.once('ticker', (pair, data) => {
-      assert.equal(pair, 'BTCUSD')
-      assert.equal(typeof data.bid, 'number')
-      assert.equal(typeof data.bidSize, 'number')
-      assert.equal(typeof data.ask, 'number')
-      assert.equal(typeof data.askSize, 'number')
-      assert.equal(typeof data.dailyChange, 'number')
-      assert.equal(typeof data.dailyChangePerc, 'number')
-      assert.equal(typeof data.lastPrice, 'number')
-      assert.equal(typeof data.volume, 'number')
-      assert.equal(typeof data.high, 'number')
-      assert.equal(typeof data.low, 'number')
+      assert.strictEqual(pair, 'BTCUSD')
+      assert.strictEqual(typeof data.bid, 'number')
+      assert.strictEqual(typeof data.bidSize, 'number')
+      assert.strictEqual(typeof data.ask, 'number')
+      assert.strictEqual(typeof data.askSize, 'number')
+      assert.strictEqual(typeof data.dailyChange, 'number')
+      assert.strictEqual(typeof data.dailyChangePerc, 'number')
+      assert.strictEqual(typeof data.lastPrice, 'number')
+      assert.strictEqual(typeof data.volume, 'number')
+      assert.strictEqual(typeof data.high, 'number')
+      assert.strictEqual(typeof data.low, 'number')
       bws.close()
       wss.close(done)
     })
@@ -260,11 +260,10 @@ describe('WebSocket v1 integration', () => {
     bws.open()
 
     bws.once('trade', (pair, data) => {
-      assert.equal(pair, 'BTCUSD')
-      assert.equal(typeof data[0].seq, 'number')
-      assert.equal(typeof data[0].timestamp, 'number')
-      assert.equal(typeof data[0].price, 'number')
-      assert.equal(typeof data[0].amount, 'number')
+      assert.strictEqual(pair, 'BTCUSD')
+      assert.strictEqual(typeof data[0].timestamp, 'number')
+      assert.strictEqual(typeof data[0].price, 'number')
+      assert.strictEqual(typeof data[0].amount, 'number')
       bws.close()
       wss.close(done)
     })
