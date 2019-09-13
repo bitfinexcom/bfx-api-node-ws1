@@ -11,14 +11,12 @@ const orderbookR0 = require('../fixtures/response-ws-1-orderbook-R0.json')
 const PORT = 1337
 
 const getWSInstance = () => {
-  return new WSv1({
-    apiKey: 'dummy',
-    apiSecret: 'dummy',
-    url: `ws://localhost:${PORT}`
-  })
+  return new WSv1()
 }
 
-describe('WebSocket v1 integration', () => {
+describe('WebSocket v1 integration', function () {
+  this.timeout(10 * 1000)
+
   it('plays ping pong', (done) => {
     const wss = new WebSocket.Server({
       perMessageDeflate: false,
@@ -58,13 +56,10 @@ describe('WebSocket v1 integration', () => {
     })
 
     bws.on('info', (data) => {
-      assert.deepEqual(
-        data,
-        {
-          event: 'info',
-          version: 1.1
-        }
-      )
+      assert(_isObject(data.platform))
+      assert.strictEqual(data.event, 'info')
+      assert.strictEqual(data.version, 1.1)
+      assert.strictEqual(data.platform.status, 1)
       bws.close()
       wss.close(done)
     })
