@@ -1,6 +1,6 @@
 {
   "name": "bfx-api-node-ws1",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Legacy WSv1 transport for the Bitfinex Node API",
   "engines": {
     "node": ">=7"
@@ -9,7 +9,9 @@
   "scripts": {
     "lint": "standard",
     "test": "npm run lint && npm run unit",
-    "unit": "NODE_ENV=test mocha -b --recursive"
+    "unit": "NODE_ENV=test mocha -b --recursive",
+    "docs": "npm run ws1_docs",
+    "ws1_docs": "node_modules/jsdoc-to-markdown/bin/cli.js lib/ws.js > docs/ws1_docs.md"
   },
   "repository": {
     "type": "git",
@@ -36,6 +38,7 @@
   "devDependencies": {
     "babel-eslint": "^10.0.3",
     "chai": "^4.2.0",
+    "jsdoc-to-markdown": "^5.0.1",
     "mocha": "^6.2.0",
     "standard": "^14.1.0"
   },
