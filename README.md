@@ -36,7 +36,7 @@ ws.on('trades', (pair, trade) => {
 
 ### Docs
 
-For JSDoc-generated API documentation, see `docs/ws1.md`
+For JSDoc-generated API documentation, [see `docs/ws1.md`](/docs/ws1.md)
 
 ### Contributing
 
