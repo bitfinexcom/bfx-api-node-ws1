@@ -8,16 +8,35 @@ const WebSocket = require('ws')
 const WSv1 = require('../../lib/ws')
 
 describe('websocket1 parsing non json', () => {
+  let ws = null
+  let wss = null
+
+  afterEach(async () => {
+    try { // may fail due to being modified by a test, it's not a problem
+      if (ws && ws.isOpen()) {
+        await new Promise(resolve => ws.close(resolve))
+      }
+    } catch (e) {}
+
+    ws = null
+
+    if (wss) {
+      await new Promise(resolve => wss.close(resolve))
+    }
+
+    wss = null
+  })
+
   it('should not crash the client', (done) => {
-    const bws = new WSv1({
+    ws = new WSv1({
       apiKey: 'dummy',
       apiSecret: 'dummy',
       url: `ws://localhost:${PORT}`
     })
 
-    bws.open()
+    ws.open()
 
-    const wss = new WebSocket.Server({
+    wss = new WebSocket.Server({
       perMessageDeflate: false,
       port: PORT
     })
@@ -26,15 +45,12 @@ describe('websocket1 parsing non json', () => {
       ws.on('message', function incoming (msg) {
         msg = JSON.parse(msg)
         assert.strictEqual(msg.len, '25')
-        wss.close()
         done()
       })
 
       ws.send("HTTP Code 408 - I'm a Tea Pot")
     })
 
-    bws.on('open', () => {
-      bws.subscribeOrderBook('BTCUSD', 'R0')
-    })
+    ws.on('open', () => ws.subscribeOrderBook('BTCUSD', 'R0'))
   })
 })
