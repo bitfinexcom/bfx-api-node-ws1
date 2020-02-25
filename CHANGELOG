@@ -1,5 +1,6 @@
 # 1.0.3
 - fix: use relative paths to allow generic mocha execution
+- feature: add isOpen() method
 
 # 1.0.2
 - docs: create/update
