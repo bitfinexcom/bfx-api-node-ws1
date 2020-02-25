@@ -1,3 +1,6 @@
+# 1.0.3
+- fix: refactor tests so they can run alongside all other HF/API library tests
+
 # 1.0.2
 - docs: create/update
 
