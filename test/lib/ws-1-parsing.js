@@ -11,12 +11,12 @@ describe('websocket1 parsing non json', () => {
   let ws = null
   let wss = null
 
-  afterEach(async () => {
+  afterEach(async () => { // eslint-disable-line
     try { // may fail due to being modified by a test, it's not a problem
       if (ws && ws.isOpen()) {
         await new Promise(resolve => ws.close(resolve))
       }
-    } catch (e) {}
+    } catch (e) {} // eslint-disable-line
 
     ws = null
 
