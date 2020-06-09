@@ -25,7 +25,7 @@ describe('WebSocket v1 integration', () => {
       if (ws && ws.isOpen()) {
         ws.close()
       }
-    } catch (e) {}
+    } catch (e) {} // eslint-disable-line
 
     ws = null
 
@@ -44,7 +44,7 @@ describe('WebSocket v1 integration', () => {
 
     ws = getWSInstance()
     wss.on('connection', (ws) => {
-      ws.on('message', (msg) => {
+      ws.on('message', () => {
         ws.send('{"event":"pong"}')
       })
     })

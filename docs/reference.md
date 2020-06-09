@@ -1,16 +1,49 @@
+## Modules
+
+<dl>
+<dt><del><a href="#module_bfx-api-node-ws1">bfx-api-node-ws1</a></del></dt>
+<dd><p>This repo contains the reference implementation for version 1 of the
+websocket Bitfinex API. It is deprecated in favour of version 2, and should
+no longer be used.</p>
+<p>For the version 2 API library, see <a href="https://github.com/bitfinexcom/bitfinex-api-node">bitfinex-api-node</a>.</p>
+</dd>
+</dl>
+
+## Classes
+
+<dl>
+<dt><a href="#WSv1">WSv1</a> ⇐ <code>events.EventEmitter</code></dt>
+<dd><p>Communicates with v1 of the Bitfinex WebSocket API</p>
+</dd>
+</dl>
+
+<a name="module_bfx-api-node-ws1"></a>
+
+## ~~bfx-api-node-ws1~~
+***Deprecated***
+
+This repo contains the reference implementation for version 1 of the
+websocket Bitfinex API. It is deprecated in favour of version 2, and should
+no longer be used.
+
+For the version 2 API library, see [bitfinex-api-node](https://github.com/bitfinexcom/bitfinex-api-node).
+
+**License**: MIT  
 <a name="WSv1"></a>
 
-## WSv1
+## WSv1 ⇐ <code>events.EventEmitter</code>
 Communicates with v1 of the Bitfinex WebSocket API
 
 **Kind**: global class  
+**Extends**: <code>events.EventEmitter</code>  
 
-* [WSv1](#WSv1)
-    * [new WSv1()](#new_WSv1_new)
+* [WSv1](#WSv1) ⇐ <code>events.EventEmitter</code>
+    * [new WSv1(opts)](#new_WSv1_new)
+    * [.isOpen()](#WSv1+isOpen) ⇒ <code>boolean</code>
     * [.open()](#WSv1+open)
     * [.close()](#WSv1+close)
     * [.send(msg)](#WSv1+send)
-    * [.subscribeOrderBook(pair, precision, length)](#WSv1+subscribeOrderBook)
+    * [.subscribeOrderBook(pair, [prec], [len])](#WSv1+subscribeOrderBook)
     * [.subscribeTrades(pair)](#WSv1+subscribeTrades)
     * [.subscribeTicker(pair)](#WSv1+subscribeTicker)
     * [.unsubscribe(chanId)](#WSv1+unsubscribe)
@@ -18,14 +51,22 @@ Communicates with v1 of the Bitfinex WebSocket API
 
 <a name="new_WSv1_new"></a>
 
-### new WSv1()
+### new WSv1(opts)
 
-| Param | Type | Description |
-| --- | --- | --- |
-| opts.apiKey | <code>sting</code> |  |
-| opts.apiSecret | <code>string</code> |  |
-| opts.url | <code>string</code> | ws connection url |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| opts | <code>object</code> |  | options |
+| [opts.apiKey] | <code>string</code> | <code>&quot;&#x27;&#x27;&quot;</code> | API key |
+| [opts.apiSecret] | <code>string</code> | <code>&quot;&#x27;&#x27;&quot;</code> | API secret |
+| [opts.url] | <code>string</code> | <code>&quot;&#x27;wss://api.bitfinex.com/ws&#x27;&quot;</code> | connection url |
 
+<a name="WSv1+isOpen"></a>
+
+### wSv1.isOpen() ⇒ <code>boolean</code>
+Returns status of websocket
+
+**Kind**: instance method of [<code>WSv1</code>](#WSv1)  
+**Returns**: <code>boolean</code> - open  
 <a name="WSv1+open"></a>
 
 ### wSv1.open()
@@ -46,13 +87,13 @@ string.
 
 **Kind**: instance method of [<code>WSv1</code>](#WSv1)  
 
-| Param | Type |
-| --- | --- |
-| msg | <code>\*</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| msg | <code>object</code> \| <code>Array</code> | message |
 
 <a name="WSv1+subscribeOrderBook"></a>
 
-### wSv1.subscribeOrderBook(pair, precision, length)
+### wSv1.subscribeOrderBook(pair, [prec], [len])
 Subscribe to order book updates. Snapshot will be sent as multiple updates.
 Event will be emited as `PAIRNAME_book`.
 
@@ -61,9 +102,9 @@ Event will be emited as `PAIRNAME_book`.
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| pair | <code>string</code> | <code>&quot;BTCUSD&quot;</code> |  |
-| precision | <code>string</code> |  | price aggregation level (P0 (def), P1, P2, P3) |
-| length | <code>string</code> |  | number of price points. 25 (default) or 100. |
+| pair | <code>string</code> | <code>&quot;BTCUSD&quot;</code> | pair |
+| [prec] | <code>string</code> | <code>&quot;&#x27;P0&#x27;&quot;</code> | price aggregation level (P0, P1, P2, P3) |
+| [len] | <code>string</code> | <code>&quot;&#x27;25&#x27;&quot;</code> | number of price points. 25 or 100. |
 
 <a name="WSv1+subscribeTrades"></a>
 
@@ -74,9 +115,9 @@ Event will be emited as `PAIRNAME_trades`.
 **Kind**: instance method of [<code>WSv1</code>](#WSv1)  
 **See**: http://docs.bitfinex.com/#trades75  
 
-| Param | Type | Default |
-| --- | --- | --- |
-| pair | <code>string</code> | <code>&quot;BTCUSD&quot;</code> | 
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| pair | <code>string</code> | <code>&quot;BTCUSD&quot;</code> | pair |
 
 <a name="WSv1+subscribeTicker"></a>
 

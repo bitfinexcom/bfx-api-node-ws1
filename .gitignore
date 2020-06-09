@@ -8,3 +8,6 @@ source/images
 todo
 package-lock.json
 .env
+.nyc_output
+coverage
+tags
