@@ -43,10 +43,10 @@
     "standard": "^14.1.0"
   },
   "dependencies": {
-    "bfx-api-node-util": "^1.0.2",
-    "bluebird": "^3.5.5",
-    "debug": "^4.1.1",
+    "bfx-api-node-util": "^1.0.10",
+    "bluebird": "3.5.5",
+    "debug": "4.1.1",
     "lodash": "^4.17.15",
-    "ws": "^3.0.0"
+    "ws": "3.0.0"
   }
 }
