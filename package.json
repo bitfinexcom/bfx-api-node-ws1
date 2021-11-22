@@ -1,6 +1,6 @@
 {
   "name": "bfx-api-node-ws1",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Legacy WSv1 transport for the Bitfinex Node API",
   "engines": {
     "node": ">=7"
