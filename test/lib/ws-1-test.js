@@ -1,7 +1,6 @@
-/* eslint-env mocha */
 'use strict'
 
-const assert = require('assert')
+const test = require('brittle')
 const WebSocket = require('ws')
 const _isObject = require('lodash/isObject')
 
@@ -16,11 +15,12 @@ const getWSInstance = (args) => (
   })
 )
 
-describe('WebSocket v1 integration', () => {
+test('WebSocket v1 integration', async (t) => {
   let ws = null
   let wss = null
 
-  afterEach(async () => {
+  const opts = { timeout: 10 * 1000 }
+  const teardown = async () => {
     try { // may fail due to being modified by a test, it's not a problem
       if (ws && ws.isOpen()) {
         ws.close()
@@ -34,9 +34,12 @@ describe('WebSocket v1 integration', () => {
     }
 
     wss = null
-  })
+  }
 
-  it('plays ping pong', (done) => {
+  await t.test('plays ping pong', opts, (t) => {
+    t.teardown(teardown)
+    t.plan(1)
+
     wss = new WebSocket.Server({
       perMessageDeflate: false,
       port: PORT
@@ -50,11 +53,14 @@ describe('WebSocket v1 integration', () => {
     })
 
     ws.on('open', () => ws.send({ event: 'ping' }))
-    ws.on('pong', () => done())
+    ws.on('pong', () => t.pass())
     ws.open()
   })
 
-  it('should receive info message', (done) => {
+  await t.test('should receive info message', opts, (t) => {
+    t.teardown(teardown)
+    t.plan(4)
+
     wss = new WebSocket.Server({
       perMessageDeflate: false,
       port: PORT
@@ -73,17 +79,19 @@ describe('WebSocket v1 integration', () => {
     })
 
     ws.on('info', (data) => {
-      assert(_isObject(data.platform))
-      assert.strictEqual(data.event, 'info')
-      assert.strictEqual(data.version, 1.1)
-      assert.strictEqual(data.platform.status, 1)
-      done()
+      t.ok(_isObject(data.platform))
+      t.is(data.event, 'info')
+      t.is(data.version, 1.1)
+      t.is(data.platform.status, 1)
     })
 
     ws.open()
   })
 
-  it('should emit an error when authorization fails', (done) => {
+  await t.test('should emit an error when authorization fails', opts, (t) => {
+    t.teardown(teardown)
+    t.plan(1)
+
     wss = new WebSocket.Server({
       perMessageDeflate: false,
       port: PORT
@@ -98,15 +106,17 @@ describe('WebSocket v1 integration', () => {
     })
 
     ws.on('error', (err) => {
-      assert.strictEqual(err.event, 'auth')
-      done()
+      t.is(err.event, 'auth')
     })
 
     ws.on('open', ws.auth.bind(ws))
     ws.open()
   })
 
-  it('should unsubscribe by channelId', (done) => {
+  await t.test('should unsubscribe by channelId', opts, (t) => {
+    t.teardown(teardown)
+    t.plan(2)
+
     wss = new WebSocket.Server({
       perMessageDeflate: false,
       port: PORT
@@ -130,9 +140,8 @@ describe('WebSocket v1 integration', () => {
       const channelId = data.chanId
 
       ws.once('unsubscribed', (data) => {
-        assert.strictEqual(data.status, 'OK')
-        assert.strictEqual(data.chanId, channelId)
-        done()
+        t.is(data.status, 'OK')
+        t.is(data.chanId, channelId)
       })
 
       ws.unsubscribe(channelId)
@@ -142,7 +151,10 @@ describe('WebSocket v1 integration', () => {
     ws.open()
   })
 
-  it('should receive a subscribed success messages', (done) => {
+  await t.test('should receive a subscribed success messages', opts, (t) => {
+    t.teardown(teardown)
+    t.plan(2)
+
     wss = new WebSocket.Server({
       perMessageDeflate: false,
       port: PORT
@@ -156,16 +168,18 @@ describe('WebSocket v1 integration', () => {
     })
 
     ws.on('subscribed', (data) => {
-      assert.strictEqual(data.channel, 'trades')
-      assert.strictEqual(data.pair, 'BTCUSD')
-      done()
+      t.is(data.channel, 'trades')
+      t.is(data.pair, 'BTCUSD')
     })
 
     ws.on('open', () => ws.subscribeTrades('BTCUSD'))
     ws.open()
   })
 
-  it('#orderBook data should have the defined fields', (done) => {
+  await t.test('#orderBook data should have the defined fields', opts, (t) => {
+    t.teardown(teardown)
+    t.plan(5)
+
     wss = new WebSocket.Server({
       perMessageDeflate: false,
       port: PORT
@@ -189,19 +203,21 @@ describe('WebSocket v1 integration', () => {
 
     ws = getWSInstance({ transform: true })
     ws.once('orderbook', (pair, data) => {
-      assert.strictEqual(pair, 'BTCUSD')
-      assert.strictEqual(typeof data[0].price, 'number')
-      assert.strictEqual(typeof data[0].orderId, 'number')
-      assert.strictEqual(typeof data[0].amount, 'number')
-      assert.strictEqual(data.length, 50)
-      done()
+      t.is(pair, 'BTCUSD')
+      t.is(typeof data[0].price, 'number')
+      t.is(typeof data[0].orderId, 'number')
+      t.is(typeof data[0].amount, 'number')
+      t.is(data.length, 50)
     })
 
     ws.on('open', () => ws.subscribeOrderBook('BTCUSD'))
     ws.open()
-  }).timeout(10 * 1000)
+  })
 
-  it('#ticker data should have the defined fields', (done) => {
+  await t.test('#ticker data should have the defined fields', opts, (t) => {
+    t.teardown(teardown)
+    t.plan(11)
+
     wss = new WebSocket.Server({
       perMessageDeflate: false,
       port: PORT
@@ -218,25 +234,27 @@ describe('WebSocket v1 integration', () => {
     ws = getWSInstance()
 
     ws.once('ticker', (pair, data) => {
-      assert.strictEqual(pair, 'BTCUSD')
-      assert.strictEqual(typeof data.bid, 'number')
-      assert.strictEqual(typeof data.bidSize, 'number')
-      assert.strictEqual(typeof data.ask, 'number')
-      assert.strictEqual(typeof data.askSize, 'number')
-      assert.strictEqual(typeof data.dailyChange, 'number')
-      assert.strictEqual(typeof data.dailyChangePerc, 'number')
-      assert.strictEqual(typeof data.lastPrice, 'number')
-      assert.strictEqual(typeof data.volume, 'number')
-      assert.strictEqual(typeof data.high, 'number')
-      assert.strictEqual(typeof data.low, 'number')
-      done()
+      t.is(pair, 'BTCUSD')
+      t.is(typeof data.bid, 'number')
+      t.is(typeof data.bidSize, 'number')
+      t.is(typeof data.ask, 'number')
+      t.is(typeof data.askSize, 'number')
+      t.is(typeof data.dailyChange, 'number')
+      t.is(typeof data.dailyChangePerc, 'number')
+      t.is(typeof data.lastPrice, 'number')
+      t.is(typeof data.volume, 'number')
+      t.is(typeof data.high, 'number')
+      t.is(typeof data.low, 'number')
     })
 
     ws.on('open', () => ws.subscribeTicker('BTCUSD'))
     ws.open()
   })
 
-  it('#trade data should have the defined fields', (done) => {
+  await t.test('#trade data should have the defined fields', opts, (t) => {
+    t.teardown(teardown)
+    t.plan(4)
+
     wss = new WebSocket.Server({
       perMessageDeflate: false,
       port: PORT
@@ -269,14 +287,13 @@ describe('WebSocket v1 integration', () => {
     ws = getWSInstance()
 
     ws.once('trade', (pair, data) => {
-      assert.strictEqual(pair, 'BTCUSD')
-      assert.strictEqual(typeof data[0].timestamp, 'number')
-      assert.strictEqual(typeof data[0].price, 'number')
-      assert.strictEqual(typeof data[0].amount, 'number')
-      done()
+      t.is(pair, 'BTCUSD')
+      t.is(typeof data[0].timestamp, 'number')
+      t.is(typeof data[0].price, 'number')
+      t.is(typeof data[0].amount, 'number')
     })
 
     ws.on('open', () => ws.subscribeTrades('BTCUSD'))
     ws.open()
   })
-}).timeout(10 * 1000)
+})

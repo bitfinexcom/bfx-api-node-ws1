@@ -1,3 +1,10 @@
+# 2.0.0
+- Require Node.js >= 22
+- meta: bump ws to 7.5.13, bfx-api-node-util to 2.0.0, lodash to 4.18.1
+- meta: drop debug, unused bluebird and chai
+- meta: remove docs/, jsdoc-to-markdown and Travis config
+- Tests: migrate from mocha to brittle, lint with @bitfinex/lint-js
+
 # 1.0.3
 - fix: use relative paths to allow generic mocha execution
 - feature: add isOpen() method
