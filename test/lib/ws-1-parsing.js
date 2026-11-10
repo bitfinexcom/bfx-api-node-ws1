@@ -1,20 +1,19 @@
-/* eslint-env mocha */
 'use strict'
 
 const PORT = 1337
 
-const assert = require('assert')
+const test = require('brittle')
 const WebSocket = require('ws')
 const WSv1 = require('../../lib/ws')
 
-describe('websocket1 parsing non json', () => {
+test('websocket1 parsing non json', async (t) => {
   let ws = null
   let wss = null
 
-  afterEach(async () => {
+  const teardown = async () => {
     try { // may fail due to being modified by a test, it's not a problem
       if (ws && ws.isOpen()) {
-        await new Promise(resolve => ws.close(resolve))
+        ws.close()
       }
     } catch (e) {}
 
@@ -25,9 +24,12 @@ describe('websocket1 parsing non json', () => {
     }
 
     wss = null
-  })
+  }
 
-  it('should not crash the client', (done) => {
+  await t.test('should not crash the client', (t) => {
+    t.teardown(teardown)
+    t.plan(1)
+
     ws = new WSv1({
       apiKey: 'dummy',
       apiSecret: 'dummy',
@@ -44,8 +46,7 @@ describe('websocket1 parsing non json', () => {
     wss.on('connection', function connection (ws) {
       ws.on('message', function incoming (msg) {
         msg = JSON.parse(msg)
-        assert.strictEqual(msg.len, '25')
-        done()
+        t.is(msg.len, '25')
       })
 
       ws.send("HTTP Code 408 - I'm a Tea Pot")
